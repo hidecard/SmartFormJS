@@ -3,86 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Registration Form</title>
+  <title>E-commerce Checkout Form</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <form id="studentForm">
-    <h2>ကျောင်းသား မှတ်ပုံတင်ခြင်း</h2>
+  <form id="checkoutForm">
+    <h2>Checkout</h2>
+    <div>
+      <input type="text" name="customerName" placeholder="Customer Name" required>
+      <span class="error"></span>
+    </div>
+    <div>
+      <input type="email" name="email" placeholder="Email" required>
+      <span class="error"></span>
+    </div>
+    <div>
+      <input type="text" name="product" placeholder="Product Name" required>
+      <span class="error"></span>
+    </div>
+    <div>
+      <input type="number" name="quantity" placeholder="Quantity" required min="1">
+      <span class="error"></span>
+    </div>
+    <button type="submit">Pay Now</button>
   </form>
 
   <script src="smartform.js"></script>
   <script>
-    const form = new SmartForm('#studentForm', {
+    const form = new SmartForm('#checkoutForm', {
       fields: {
-        studentName: { type: 'text', required: true },
+        customerName: { type: 'text', required: true },
         email: { type: 'email', required: true },
-        phone: { type: 'tel', pattern: /^[0-9]{9,11}$/, required: true },
-        grade: { type: 'select', required: true }
+        product: { type: 'text', required: true },
+        quantity: { type: 'number', required: true }
       },
-      language: 'my',
-      onSubmit: (data) => console.log('Student Registered:', data)
+      language: 'en',
+      onSubmit: (data) => console.log('Order Submitted:', data)
     });
 
-    // Core Features
-    form.enableGamifiedExperience({
-      pointsPerField: 10,
-      animations: { onFieldFilled: 'stepForward', onComplete: 'fireworks' },
-      rewardMessage: 'ဂုဏ်ယူပါတယ်! သင့်မှတ်ပုံတင်ခြင်း အောင်မြင်ပါပြီ။'
-    });
-    form.enableProgress({ showPercentage: true });
-    form.enableAutoSave({ interval: 5000, recoveryMessage: 'သင့်ဒေတာကို ပြန်ယူလိုပါသလား?' });
-    form.enableSmartSuggestions('studentName', { source: ['မောင်မောင်', 'မမမြတ်', 'ကိုကြီး'] });
-    form.enableSecureInputShield({
-      fields: ['phone'],
-      encryptionPreview: true,
-      antiCapture: true,
-      fakeInputProtection: true,
-      trustMessage: 'သင့်ဒေတာ လုံခြုံပါတယ်'
+    form.enablePaymentGateway({
+      publishableKey: 'pk_test_your_stripe_publishable_key',
+      clientSecret: 'pi_test_your_client_secret'
     });
 
-    // Real-Life Features
-    form.enableStudentIDGenerator({ message: 'သင့် Student ID:' });
-    form.enableDataExport({ buttonText: 'ဒေတာထုတ်ယူရန်', format: 'csv' });
-    form.enableDuplicateDetection({ keyField: 'email', message: 'ဤအီးမေးလ် ရှိပြီးသားဖြစ်ပါသည်!' });
-    form.enableFileUpload({ fieldName: 'photo' });
-    form.enableAPISubmission({
-      url: 'https://example.com/api/students',
-      successMessage: 'ဒေတာ အောင်မြင်စွာ ပို့လိုက်ပါပြီ!',
-      errorMessage: 'ပို့ဆောင်မှု မအောင်မြင်ပါ!'
+    form.enableOrderTracking();
+
+    form.enableInventoryCheck({
+      productField: 'product',
+      apiUrl: 'https://example.com/inventory'
     });
 
-    // Additional Features
-    form.enableMultiStep({
-      steps: [
-        [{ type: 'text', name: 'studentName', placeholder: 'ကျောင်းသားအမည်', required: true }],
-        [{ type: 'email', name: 'email', placeholder: 'အီးမေးလ်', required: true }],
-        [{ type: 'tel', name: 'phone', placeholder: 'ဖုန်းနံပါတ်', required: true }],
-        [{ type: 'select', name: 'grade', placeholder: 'အတန်းရွေးပါ', required: true, options: ['Grade 1', 'Grade 2', 'Grade 3'] }]
+    form.enableDynamicPricing({
+      items: [
+        { quantityField: 'quantity', price: 20 }
       ]
     });
-    form.enableRealTimeValidation();
-    form.enableBulkImport({ message: 'ကျောင်းသားများ ထည့်သွင်းပြီးပါပြီ!' });
-    form.enableEmailConfirmation({
-      emailApiUrl: 'https://example.com/api/send-email',
-      message: 'Confirmation အီးမေးလ် ပို့လိုက်ပါပြီ!'
-    });
-    form.enableAnalyticsDashboard();
 
-    // New Features
-    form.enableCaptcha();
-    form.enableOfflineMode({ message: 'အင်တာနက် မရှိပါ။ အင်တာနက် ပြန်ရတဲ့အခါ ပို့ပါမယ်။' });
-    form.enableConditionalFields({
-      rules: [
-        {
-          trigger: 'grade',
-          target: { type: 'text', name: 'teacherName', placeholder: 'ဆရာအမည်', required: false },
-          condition: (value) => value === 'Grade 1'
-        }
+    form.enableCustomerFeedback({
+      apiUrl: 'https://example.com/feedback'
+    });
+
+    form.enableFileAttachment({
+      fieldName: 'attachment',
+      maxSize: 2 * 1024 * 1024,
+      accept: '.pdf,.jpg,.png'
+    });
+
+    form.enableGeoLocation();
+
+    form.enableCouponCode({
+      validCodes: ['SAVE10', 'DISCOUNT20'],
+      discounts: { 'SAVE10': 10, 'DISCOUNT20': 20 }
+    });
+
+    form.enableAppointmentScheduling({
+      apiUrl: 'https://example.com/slots'
+    });
+
+    form.enableLiveChat();
+
+    form.enableMultiCurrency({
+      currencies: ['USD', 'EUR', 'MMK'],
+      apiUrl: 'https://open.er-api.com/v6/latest'
+    });
+
+    form.enableSubscriptionPlan({
+      plans: [
+        { name: 'Monthly', price: 10, interval: 'month' },
+        { name: 'Yearly', price: 100, interval: 'year' }
       ]
     });
-    form.enableFormTimer({ duration: 300 }); // 5 minutes
-    form.enablePrintForm({ buttonText: 'Print Form' });
+
+    form.enableProductCustomization({
+      options: [
+        { name: 'Gift Wrap', price: 5 },
+        { name: 'Engraving', price: 10 }
+      ]
+    });
+
+    form.enableTaxCalculator({
+      taxRates: { 'US': 0.08, 'EU': 0.20 },
+      defaultRate: 0.1
+    });
+
+    form.enableSocialLogin();
   </script>
 </body>
 </html>

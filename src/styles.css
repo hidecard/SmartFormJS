@@ -21,136 +21,112 @@ body {
     border-radius: 4px;
   }
   
-  .error {
-    color: red;
+  .error, .payment-error, .file-error, .coupon-status, .slot-status {
     font-size: 12px;
   }
   
-  .progress-bar {
-    height: 20px;
-    background: #4caf50;
-    color: white;
-    text-align: center;
-    transition: width 0.3s;
-    width: 0;
-    border-radius: 4px;
-  }
+  .payment-error, .file-error { color: red; }
+  .coupon-status { color: #4caf50; }
+  .slot-status, .tax-display { color: #2196f3; }
   
-  .suggestions {
-    background: white;
+  .card-element {
+    padding: 10px;
     border: 1px solid #ccc;
-    max-height: 100px;
-    overflow-y: auto;
     border-radius: 4px;
+    background: white;
   }
   
-  .suggestions div {
-    padding: 5px;
-    cursor: pointer;
-  }
+  .stock-status { margin-left: 10px; }
   
-  .suggestions div:hover {
-    background: #f0f0f0;
-  }
-  
-  .points {
+  .price-display {
     font-weight: bold;
-    color: #2196f3;
-    font-size: 18px;
-    margin-bottom: 10px;
+    color: #ff9800;
   }
   
-  .trust {
-    color: #4caf50;
-    font-style: italic;
-  }
-  
-  .animation.fireworks {
+  .feedback-container {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 50px;
-    height: 50px;
-    background: #ff9800;
-    border-radius: 50%;
     transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
   
-  .animation.stepForward {
-    width: 20px;
-    height: 20px;
-    background: #ff9800;
-    border-radius: 50%;
-    animation: move 0.5s;
+  .star-rating .star {
+    cursor: pointer;
+    font-size: 24px;
+    color: #ccc;
   }
   
-  @keyframes move {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(20px); }
-  }
+  .star-rating .star.selected { color: #ff9800; }
   
-  .export-btn, .print-btn, .step-nav button {
+  .geo-button, .chat-button {
     padding: 5px 10px;
+    background: #2196f3;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 4px;
-    margin: 10px 0;
   }
   
-  .export-btn {
-    background: #ff9800;
+  .chat-window {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
   
-  .print-btn {
-    background: #4caf50;
+  .chat-header {
+    background: #2196f3;
+    color: white;
+    padding: 5px;
+    border-radius: 8px 8px 0 0;
   }
   
-  .photo-preview {
-    margin-top: 10px;
+  .chat-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
   }
   
-  .step-container {
-    min-height: 200px;
-  }
+  .chat-input { width: 70%; margin: 10px; }
+  .send-message { width: 20%; }
   
-  .step-nav {
+  .plan-container, .custom-container {
     display: flex;
+    flex-direction: column;
     gap: 10px;
   }
   
-  .step-nav button {
-    background: #2196f3;
+  .social-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
   }
   
-  .validation-feedback {
-    margin-left: 10px;
-    font-size: 16px;
-  }
-  
-  .analytics-dashboard {
-    margin-top: 20px;
-    padding: 10px;
-    background: #e0e0e0;
+  .google-login, .facebook-login {
+    padding: 8px;
+    color: white;
+    border: none;
+    cursor: pointer;
     border-radius: 4px;
   }
   
-  .captcha-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .google-login { background: #db4437; }
+  .facebook-login { background: #4267b2; }
+  
+  button[type="submit"] {
+    padding: 10px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
   }
   
-  .captcha-container input {
-    width: 60px;
-  }
-  
-  .timer {
-    font-weight: bold;
-    color: #f44336;
-    margin-bottom: 10px;
-  }
-  
-  .conditional-field {
-    margin-top: 10px;
-  }
+  button[type="submit"]:hover { background: #45a049; }
