@@ -9,28 +9,7 @@
 <body>
   <form id="studentForm">
     <h2>ကျောင်းသား မှတ်ပုံတင်ခြင်း</h2>
-    <div>
-      <input type="text" name="studentName" placeholder="ကျောင်းသားအမည်" required>
-      <span class="error"></span>
-    </div>
-    <div>
-      <input type="email" name="email" placeholder="အီးမေးလ်" required>
-      <span class="error"></span>
-    </div>
-    <div>
-      <input type="tel" name="phone" placeholder="ဖုန်းနံပါတ်" required>
-      <span class="error"></span>
-    </div>
-    <div>
-      <select name="grade" required>
-        <option value="">အတန်းရွေးပါ</option>
-        <option value="Grade 1">အတန်း ၁</option>
-        <option value="Grade 2">အတန်း ၂</option>
-        <option value="Grade 3">အတန်း ၃</option>
-      </select>
-      <span class="error"></span>
-    </div>
-    <button type="submit">မှတ်ပုံတင်မည်</button>
+    <!-- Multi-Step က Form ကို အစားထိုးမှာမို့ HTML ကို အလွတ်ထားလို့လဲ ရတယ် -->
   </form>
 
   <script src="smartform.js"></script>
@@ -46,7 +25,7 @@
       onSubmit: (data) => console.log('Student Registered:', data)
     });
 
-    // Existing Features
+    // Core Features
     form.enableGamifiedExperience({
       pointsPerField: 10,
       animations: { onFieldFilled: 'stepForward', onComplete: 'fireworks' },
@@ -63,16 +42,33 @@
       trustMessage: 'သင့်ဒေတာ လုံခြုံပါတယ်'
     });
 
-    // New Real-Life Features
+    // Real-Life Features
     form.enableStudentIDGenerator({ message: 'သင့် Student ID:' });
-    form.enableDataExport({ buttonText: 'ဒေတာထုတ်ယူရန်', format: 'csv' });
+    form.enableDataExport({ buttonText: 'ဒေတာထုတ်ယူရန်', format: 'csv' }); // Export Button ပေါ်အောင် ပြင်ထားတယ်
     form.enableDuplicateDetection({ keyField: 'email', message: 'ဤအီးမေးလ် ရှိပြီးသားဖြစ်ပါသည်!' });
     form.enableFileUpload({ fieldName: 'photo' });
     form.enableAPISubmission({
-      url: 'https://example.com/api/students', // Replace with actual API endpoint
+      url: 'https://example.com/api/students',
       successMessage: 'ဒေတာ အောင်မြင်စွာ ပို့လိုက်ပါပြီ!',
       errorMessage: 'ပို့ဆောင်မှု မအောင်မြင်ပါ!'
     });
+
+    // Additional Features
+    form.enableMultiStep({
+      steps: [
+        [{ type: 'text', name: 'studentName', placeholder: 'ကျောင်းသားအမည်', required: true }],
+        [{ type: 'email', name: 'email', placeholder: 'အီးမေးလ်', required: true }],
+        [{ type: 'tel', name: 'phone', placeholder: 'ဖုန်းနံပါတ်', required: true }],
+        [{ type: 'select', name: 'grade', placeholder: 'အတန်းရွေးပါ', required: true, options: ['Grade 1', 'Grade 2', 'Grade 3'] }]
+      ]
+    });
+    form.enableRealTimeValidation();
+    form.enableBulkImport({ message: 'ကျောင်းသားများ ထည့်သွင်းပြီးပါပြီ!' });
+    form.enableEmailConfirmation({
+      emailApiUrl: 'https://example.com/api/send-email',
+      message: 'Confirmation အီးမေးလ် ပို့လိုက်ပါပြီ!'
+    });
+    form.enableAnalyticsDashboard();
   </script>
 </body>
 </html>

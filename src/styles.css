@@ -65,13 +65,14 @@ body {
     font-style: italic;
   }
   
-  .add-dynamic {
+  .add-dynamic, .export-btn, .step-nav button {
     padding: 5px 10px;
     background: #2196f3;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 4px;
+    margin-top: 10px;
   }
   
   .dynamic-container input {
@@ -115,17 +116,32 @@ body {
     background: #45a049;
   }
   
-  /* New Styles for Real-Life Features */
   .export-btn {
-    padding: 5px 10px;
     background: #ff9800;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 10px;
+    margin: 10px 0; /* Form အပြင်မှာ ရှင်းရှင်းပေါ်အောင် Margin ထည့်တယ် */
   }
   
   .photo-preview {
     margin-top: 10px;
+  }
+  
+  .step-container {
+    min-height: 200px;
+  }
+  
+  .step-nav {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .validation-feedback {
+    margin-left: 10px;
+    font-size: 16px;
+  }
+  
+  .analytics-dashboard {
+    margin-top: 20px;
+    padding: 10px;
+    background: #e0e0e0;
+    border-radius: 4px;
   }
