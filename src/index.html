@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration Form</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <form id="studentForm">
+    <h2>ကျောင်းသား မှတ်ပုံတင်ခြင်း</h2>
+    <div>
+      <input type="text" name="studentName" placeholder="ကျောင်းသားအမည်" required>
+      <span class="error"></span>
+    </div>
+    <div>
+      <input type="email" name="email" placeholder="အီးမေးလ်" required>
+      <span class="error"></span>
+    </div>
+    <div>
+      <input type="tel" name="phone" placeholder="ဖုန်းနံပါတ်" required>
+      <span class="error"></span>
+    </div>
+    <div>
+      <select name="grade" required>
+        <option value="">အတန်းရွေးပါ</option>
+        <option value="Grade 1">အတန်း ၁</option>
+        <option value="Grade 2">အတန်း ၂</option>
+        <option value="Grade 3">အတန်း ၃</option>
+      </select>
+      <span class="error"></span>
+    </div>
+    <button type="submit">မှတ်ပုံတင်မည်</button>
+  </form>
+
+  <script src="smartform.js"></script>
+  <script>
+    const form = new SmartForm('#studentForm', {
+      fields: {
+        studentName: { type: 'text', required: true },
+        email: { type: 'email', required: true },
+        phone: { type: 'tel', pattern: /^[0-9]{9,11}$/, required: true },
+        grade: { type: 'select', required: true }
+      },
+      language: 'my',
+      onSubmit: (data) => console.log('Student Registered:', data)
+    });
+
+    // Existing Features
+    form.enableGamifiedExperience({
+      pointsPerField: 10,
+      animations: { onFieldFilled: 'stepForward', onComplete: 'fireworks' },
+      rewardMessage: 'ဂုဏ်ယူပါတယ်! သင့်မှတ်ပုံတင်ခြင်း အောင်မြင်ပါပြီ။'
+    });
+    form.enableProgress({ showPercentage: true });
+    form.enableAutoSave({ interval: 5000, recoveryMessage: 'သင့်ဒေတာကို ပြန်ယူလိုပါသလား?' });
+    form.enableSmartSuggestions('studentName', { source: ['မောင်မောင်', 'မမမြတ်', 'ကိုကြီး'] });
+    form.enableSecureInputShield({
+      fields: ['phone'],
+      encryptionPreview: true,
+      antiCapture: true,
+      fakeInputProtection: true,
+      trustMessage: 'သင့်ဒေတာ လုံခြုံပါတယ်'
+    });
+
+    // New Real-Life Features
+    form.enableStudentIDGenerator({ message: 'သင့် Student ID:' });
+    form.enableDataExport({ buttonText: 'ဒေတာထုတ်ယူရန်', format: 'csv' });
+    form.enableDuplicateDetection({ keyField: 'email', message: 'ဤအီးမေးလ် ရှိပြီးသားဖြစ်ပါသည်!' });
+    form.enableFileUpload({ fieldName: 'photo' });
+    form.enableAPISubmission({
+      url: 'https://example.com/api/students', // Replace with actual API endpoint
+      successMessage: 'ဒေတာ အောင်မြင်စွာ ပို့လိုက်ပါပြီ!',
+      errorMessage: 'ပို့ဆောင်မှု မအောင်မြင်ပါ!'
+    });
+  </script>
+</body>
+</html>
