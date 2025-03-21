@@ -9,7 +9,6 @@
 <body>
   <form id="studentForm">
     <h2>ကျောင်းသား မှတ်ပုံတင်ခြင်း</h2>
-    <!-- Multi-Step က Form ကို အစားထိုးမှာမို့ HTML ကို အလွတ်ထားလို့လဲ ရတယ် -->
   </form>
 
   <script src="smartform.js"></script>
@@ -44,7 +43,7 @@
 
     // Real-Life Features
     form.enableStudentIDGenerator({ message: 'သင့် Student ID:' });
-    form.enableDataExport({ buttonText: 'ဒေတာထုတ်ယူရန်', format: 'csv' }); // Export Button ပေါ်အောင် ပြင်ထားတယ်
+    form.enableDataExport({ buttonText: 'ဒေတာထုတ်ယူရန်', format: 'csv' });
     form.enableDuplicateDetection({ keyField: 'email', message: 'ဤအီးမေးလ် ရှိပြီးသားဖြစ်ပါသည်!' });
     form.enableFileUpload({ fieldName: 'photo' });
     form.enableAPISubmission({
@@ -69,6 +68,21 @@
       message: 'Confirmation အီးမေးလ် ပို့လိုက်ပါပြီ!'
     });
     form.enableAnalyticsDashboard();
+
+    // New Features
+    form.enableCaptcha();
+    form.enableOfflineMode({ message: 'အင်တာနက် မရှိပါ။ အင်တာနက် ပြန်ရတဲ့အခါ ပို့ပါမယ်။' });
+    form.enableConditionalFields({
+      rules: [
+        {
+          trigger: 'grade',
+          target: { type: 'text', name: 'teacherName', placeholder: 'ဆရာအမည်', required: false },
+          condition: (value) => value === 'Grade 1'
+        }
+      ]
+    });
+    form.enableFormTimer({ duration: 300 }); // 5 minutes
+    form.enablePrintForm({ buttonText: 'Print Form' });
   </script>
 </body>
 </html>

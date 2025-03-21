@@ -7,6 +7,7 @@ class SmartForm {
       this.data = {};
       this.filledFields = new Set();
       this.isMultiStep = false;
+      this.offlineQueue = [];
       this.init();
     }
   
@@ -16,6 +17,7 @@ class SmartForm {
         this.handleSubmit();
       });
       this.setupFields();
+      window.addEventListener('online', () => this.processOfflineQueue());
     }
   
     setupFields() {
@@ -41,39 +43,36 @@ class SmartForm {
       this.data[fieldName] = field.value;
     }
   
-    addDynamicField(fieldName, options) {
-      const container = this.form.querySelector('.dynamic-container') || document.createElement('div');
-      container.className = 'dynamic-container';
-      let count = 0;
-      const addButton = document.createElement('button');
-      addButton.textContent = 'Add ' + options.label;
-      addButton.className = 'add-dynamic';
-      addButton.onclick = () => {
-        if (count < (options.maxInstances || Infinity)) {
-          const newField = document.createElement('input');
-          newField.name = `${fieldName}_${count++}`;
-          newField.placeholder = options.label;
-          container.appendChild(newField);
-          container.appendChild(document.createElement('span'));
+    enableGamifiedExperience(options) {
+      let points = 0;
+      let pointsDisplay = this.form.querySelector('.points') || document.createElement('div');
+      pointsDisplay.className = 'points';
+      pointsDisplay.textContent = 'Points: 0';
+      this.form.insertBefore(pointsDisplay, this.form.firstChild);
+      Object.keys(this.fields).forEach((fieldName) => {
+        const field = this.form.querySelector(`[name="${fieldName}"]`);
+        if (field) {
+          field.addEventListener('input', () => {
+            const isValid = field.checkValidity() && field.value.trim() !== '';
+            if (isValid && !this.filledFields.has(fieldName)) {
+              points += options.pointsPerField || 10;
+              this.filledFields.add(fieldName);
+              pointsDisplay.textContent = `Points: ${points}`;
+              if (options.animations?.onFieldFilled) this.animate('stepForward');
+            }
+          });
         }
-      };
-      this.form.appendChild(container);
-      this.form.appendChild(addButton);
+      });
+      this.form.addEventListener('submit', () => {
+        if (this.form.checkValidity() && options.animations?.onComplete) this.animate('fireworks');
+      });
     }
   
-    enableSmartSuggestions(fieldName, options) {
-      const field = this.form.querySelector(`[name="${fieldName}"]`);
-      if (field) {
-        let suggestionBox = field.parentElement.querySelector('.suggestions') || document.createElement('div');
-        suggestionBox.className = 'suggestions';
-        field.parentElement.appendChild(suggestionBox);
-        field.addEventListener('input', () => {
-          const suggestions = options.source.filter((item) =>
-            item.toLowerCase().startsWith(field.value.toLowerCase())
-          );
-          suggestionBox.innerHTML = suggestions.map((s) => `<div onclick="this.parentElement.previousElementSibling.value='${s}';this.parentElement.innerHTML=''">${s}</div>`).join('');
-        });
-      }
+    animate(type) {
+      const animation = document.createElement('div');
+      animation.className = `animation ${type}`;
+      this.form.appendChild(animation);
+      setTimeout(() => animation.remove(), 1000);
     }
   
     enableProgress(options) {
@@ -111,25 +110,19 @@ class SmartForm {
       });
     }
   
-    enableBehaviorAdaptation(options) {
-      Object.keys(this.fields).forEach((fieldName) => {
-        const field = this.form.querySelector(`[name="${fieldName}"]`);
-        if (field) {
-          const errorSpan = field.nextElementSibling;
-          let skipCount = 0;
-          let typingTimeout;
-          field.addEventListener('input', () => {
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-              if (!field.value) errorSpan.textContent = options.hints[fieldName] || 'Please fill this';
-            }, options.typingThreshold || 3000);
-          });
-          field.addEventListener('blur', () => {
-            if (!field.value) skipCount++;
-            if (skipCount >= (options.skipTolerance || 2)) this.fields[fieldName].required = false;
-          });
-        }
-      });
+    enableSmartSuggestions(fieldName, options) {
+      const field = this.form.querySelector(`[name="${fieldName}"]`);
+      if (field) {
+        let suggestionBox = field.parentElement.querySelector('.suggestions') || document.createElement('div');
+        suggestionBox.className = 'suggestions';
+        field.parentElement.appendChild(suggestionBox);
+        field.addEventListener('input', () => {
+          const suggestions = options.source.filter((item) =>
+            item.toLowerCase().startsWith(field.value.toLowerCase())
+          );
+          suggestionBox.innerHTML = suggestions.map((s) => `<div onclick="this.parentElement.previousElementSibling.value='${s}';this.parentElement.innerHTML=''">${s}</div>`).join('');
+        });
+      }
     }
   
     enableSecureInputShield(options) {
@@ -151,48 +144,15 @@ class SmartForm {
       this.form.appendChild(trust);
     }
   
-    enableGamifiedExperience(options) {
-      let points = 0;
-      let pointsDisplay = this.form.querySelector('.points') || document.createElement('div');
-      pointsDisplay.className = 'points';
-      pointsDisplay.textContent = 'Points: 0';
-      this.form.insertBefore(pointsDisplay, this.form.firstChild);
-      Object.keys(this.fields).forEach((fieldName) => {
-        const field = this.form.querySelector(`[name="${fieldName}"]`);
-        if (field) {
-          field.addEventListener('input', () => {
-            const isValid = field.checkValidity() && field.value.trim() !== '';
-            if (isValid && !this.filledFields.has(fieldName)) {
-              points += options.pointsPerField || 10;
-              this.filledFields.add(fieldName);
-              pointsDisplay.textContent = `Points: ${points}`;
-              if (options.animations?.onFieldFilled) this.animate('stepForward');
-            }
-          });
-        }
-      });
-      this.form.addEventListener('submit', () => {
-        if (this.form.checkValidity() && options.animations?.onComplete) this.animate('fireworks');
-      });
-    }
-  
-    animate(type) {
-      const animation = document.createElement('div');
-      animation.className = `animation ${type}`;
-      this.form.appendChild(animation);
-      setTimeout(() => animation.remove(), 1000);
-    }
-  
     enableStudentIDGenerator(options) {
       this.studentIDOptions = options;
     }
   
     enableDataExport(options) {
-      // Export Button ကို Form အပြင်မှာ ထားပြီး အမြဲပြအောင်လုပ်တယ်
       const exportButton = document.createElement('button');
       exportButton.textContent = options.buttonText || 'Export Data';
       exportButton.className = 'export-btn';
-      this.form.parentElement.appendChild(exportButton); // Form အပြင်မှာ ထည့်တာ
+      this.form.parentElement.appendChild(exportButton);
       exportButton.addEventListener('click', () => {
         const dataStr = options.format === 'csv'
           ? Object.keys(this.data).map(key => `${key},${this.data[key]}`).join('\n')
@@ -233,7 +193,7 @@ class SmartForm {
       const container = document.createElement('div');
       container.appendChild(fileInput);
       container.appendChild(preview);
-      this.form.insertBefore(container, this.form.querySelector('button[type="submit"]') || this.form.lastChild);
+      this.form.appendChild(container);
     }
   
     enableAPISubmission(options) {
@@ -363,7 +323,114 @@ class SmartForm {
       this.updateDashboard();
     }
   
+    enableCaptcha(options) {
+      const captchaContainer = document.createElement('div');
+      captchaContainer.className = 'captcha-container';
+      const num1 = Math.floor(Math.random() * 10);
+      const num2 = Math.floor(Math.random() * 10);
+      const answer = num1 + num2;
+      const captchaText = document.createElement('span');
+      captchaText.textContent = `${num1} + ${num2} = `;
+      const captchaInput = document.createElement('input');
+      captchaInput.type = 'number';
+      captchaInput.name = 'captcha';
+      captchaInput.required = true;
+      const errorSpan = document.createElement('span');
+      errorSpan.className = 'error';
+      captchaContainer.appendChild(captchaText);
+      captchaContainer.appendChild(captchaInput);
+      captchaContainer.appendChild(errorSpan);
+      this.form.appendChild(captchaContainer);
+      this.captchaAnswer = answer;
+      this.captchaInput = captchaInput;
+    }
+  
+    enableOfflineMode(options) {
+      this.offlineOptions = options;
+      if (!navigator.onLine) {
+        alert(options.message || 'You are offline. Data will be submitted when online.');
+      }
+    }
+  
+    processOfflineQueue() {
+      if (this.offlineQueue.length > 0 && this.apiOptions) {
+        this.offlineQueue.forEach(async (data) => {
+          try {
+            const response = await fetch(this.apiOptions.url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            alert(this.apiOptions.successMessage || 'Offline data submitted!');
+            this.offlineQueue.shift();
+            localStorage.setItem('offlineQueue', JSON.stringify(this.offlineQueue));
+          } catch (error) {
+            console.error('Offline submission failed:', error);
+          }
+        });
+      }
+    }
+  
+    enableConditionalFields(options) {
+      options.rules.forEach(rule => {
+        const triggerField = this.form.querySelector(`[name="${rule.trigger}"]`);
+        const targetFieldContainer = document.createElement('div');
+        targetFieldContainer.className = 'conditional-field';
+        targetFieldContainer.innerHTML = `<input type="${rule.target.type}" name="${rule.target.name}" placeholder="${rule.target.placeholder}" ${rule.target.required ? 'required' : ''}><span class="error"></span>`;
+        targetFieldContainer.style.display = 'none';
+        triggerField.parentElement.appendChild(targetFieldContainer);
+  
+        triggerField.addEventListener('change', () => {
+          const shouldShow = rule.condition(triggerField.value);
+          targetFieldContainer.style.display = shouldShow ? 'block' : 'none';
+          this.fields[rule.target.name] = { type: rule.target.type, required: rule.target.required };
+          if (shouldShow) this.setupFields();
+        });
+      });
+    }
+  
+    enableFormTimer(options) {
+      const timerDisplay = document.createElement('div');
+      timerDisplay.className = 'timer';
+      let timeLeft = options.duration || 300; // Default 5 minutes
+      timerDisplay.textContent = `Time Left: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+      this.form.insertBefore(timerDisplay, this.form.firstChild);
+  
+      this.timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Time Left: ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+        if (timeLeft <= 0) {
+          clearInterval(this.timer);
+          this.handleSubmit();
+        }
+      }, 1000);
+    }
+  
+    enablePrintForm(options) {
+      const printButton = document.createElement('button');
+      printButton.textContent = options.buttonText || 'Print Form';
+      printButton.className = 'print-btn';
+      this.form.parentElement.appendChild(printButton);
+      printButton.addEventListener('click', () => {
+        const printContent = document.createElement('div');
+        printContent.innerHTML = `<h2>Student Registration</h2><table>${Object.entries(this.data).map(([key, value]) => `<tr><td>${key}</td><td>${value}</td></tr>`).join('')}</table>`;
+        const printWindow = window.open('', '', 'width=600,height=400');
+        printWindow.document.write(printContent.outerHTML);
+        printWindow.document.close();
+        printWindow.print();
+      });
+    }
+  
     async handleSubmit() {
+      if (this.captchaInput) {
+        const userAnswer = parseInt(this.captchaInput.value, 10);
+        if (userAnswer !== this.captchaAnswer) {
+          this.captchaInput.nextElementSibling.textContent = 'CAPTCHA မမှန်ပါ။';
+          return;
+        }
+      }
+  
       if (!this.form.checkValidity()) {
         this.form.reportValidity();
         return;
@@ -391,25 +458,29 @@ class SmartForm {
       }
   
       if (this.apiOptions) {
-        try {
-          const response = await fetch(this.apiOptions.url || 'https://example.com/api/students', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.data)
-          });
-          if (!response.ok) throw new Error('Network response was not ok');
-          const result = await response.json();
-          alert(this.apiOptions.successMessage || 'Successfully submitted to server!');
-          console.log('Server Response:', result);
-        } catch (error) {
-          alert(this.apiOptions.errorMessage || 'Submission failed!');
-          console.error(error);
+        if (!navigator.onLine && this.offlineOptions) {
+          this.offlineQueue.push(this.data);
+          localStorage.setItem('offlineQueue', JSON.stringify(this.offlineQueue));
+          alert(this.offlineOptions.message || 'Saved offline. Will submit when online.');
+        } else {
+          try {
+            const response = await fetch(this.apiOptions.url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(this.data)
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            alert(this.apiOptions.successMessage || 'Successfully submitted!');
+          } catch (error) {
+            alert(this.apiOptions.errorMessage || 'Submission failed!');
+            console.error(error);
+          }
         }
       }
   
       if (this.emailOptions) {
         try {
-          const response = await fetch(this.emailOptions.emailApiUrl || 'https://example.com/api/send-email', {
+          const response = await fetch(this.emailOptions.emailApiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -426,6 +497,8 @@ class SmartForm {
       }
   
       if (this.updateDashboard) this.updateDashboard();
+  
+      if (this.timer) clearInterval(this.timer);
   
       this.onSubmit(this.data);
     }

@@ -65,20 +65,6 @@ body {
     font-style: italic;
   }
   
-  .add-dynamic, .export-btn, .step-nav button {
-    padding: 5px 10px;
-    background: #2196f3;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 10px;
-  }
-  
-  .dynamic-container input {
-    margin: 5px 0;
-  }
-  
   .animation.fireworks {
     position: fixed;
     top: 50%;
@@ -103,22 +89,21 @@ body {
     100% { transform: translateX(20px); }
   }
   
-  button[type="submit"] {
-    padding: 10px;
-    background: #4caf50;
+  .export-btn, .print-btn, .step-nav button {
+    padding: 5px 10px;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 4px;
-  }
-  
-  button[type="submit"]:hover {
-    background: #45a049;
+    margin: 10px 0;
   }
   
   .export-btn {
     background: #ff9800;
-    margin: 10px 0; /* Form အပြင်မှာ ရှင်းရှင်းပေါ်အောင် Margin ထည့်တယ် */
+  }
+  
+  .print-btn {
+    background: #4caf50;
   }
   
   .photo-preview {
@@ -134,6 +119,10 @@ body {
     gap: 10px;
   }
   
+  .step-nav button {
+    background: #2196f3;
+  }
+  
   .validation-feedback {
     margin-left: 10px;
     font-size: 16px;
@@ -144,4 +133,24 @@ body {
     padding: 10px;
     background: #e0e0e0;
     border-radius: 4px;
+  }
+  
+  .captcha-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .captcha-container input {
+    width: 60px;
+  }
+  
+  .timer {
+    font-weight: bold;
+    color: #f44336;
+    margin-bottom: 10px;
+  }
+  
+  .conditional-field {
+    margin-top: 10px;
   }
